@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,24 +20,24 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
-                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                              @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
         return itemService.createItem(itemDto, ownerId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId) {
+    public ItemDto getItemById(@PathVariable @Positive Long itemId) {
         return itemService.getItemById(itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public List<ItemDto> getAllItemsByOwner(@RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
         return itemService.getAllItemsByOwner(ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@PathVariable Long itemId,
+    public ItemDto updateItem(@PathVariable @Positive Long itemId,
                               @Valid @RequestBody UpdateItemDto updateItemDto,
-                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                              @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
         return itemService.updateItem(itemId, updateItemDto, ownerId);
     }
 
