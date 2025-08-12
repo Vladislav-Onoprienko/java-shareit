@@ -64,9 +64,10 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         log.info("Удаление пользователя с ID: {}", userId);
-        if (!userRepository.deleteById(userId)) {
+        if (!userRepository.existsById(userId)) {
             log.error("Попытка удаления несуществующего пользователя с ID: {}", userId);
             throw new NotFoundException("Пользователь не найден");
         }
+        userRepository.deleteById(userId);
     }
 }
