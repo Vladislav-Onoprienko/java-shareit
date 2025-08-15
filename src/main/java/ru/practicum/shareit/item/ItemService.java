@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -36,6 +37,7 @@ public class ItemService {
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         log.info("Создание вещи '{}' для пользователя с ID: {}", itemDto.getName(), ownerId);
         User owner = userRepository.findById(ownerId)
@@ -51,6 +53,7 @@ public class ItemService {
         return itemMapper.toDto(savedItem);
     }
 
+    @Transactional
     public ItemDto updateItem(Long itemId, UpdateItemDto updateItemDto, Long ownerId) {
         log.info("Обновление вещи с ID: {}", itemId);
         Item item = itemRepository.findById(itemId)
@@ -118,6 +121,7 @@ public class ItemService {
         return itemMapper.toDtoList(items);
     }
 
+    @Transactional
     public void deleteItem(Long itemId) {
         log.info("Удаление вещи с ID: {}", itemId);
         if (!itemRepository.existsById(itemId)) {

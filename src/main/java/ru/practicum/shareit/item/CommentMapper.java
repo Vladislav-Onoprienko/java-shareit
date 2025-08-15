@@ -1,40 +1,31 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
-@Component
-@RequiredArgsConstructor
-public class CommentMapper {
-    private final UserMapper userMapper;
+@Mapper(
+        componentModel = "spring",
+        imports = {LocalDateTime.class}
+)
+public interface CommentMapper {
+    @Mapping(target = "authorName", source = "author.name")
+    CommentDto toDto(Comment comment);
 
-    public CommentDto toDto(Comment comment) {
-        return CommentDto.builder()
-                .id(comment.getId())
-                .text(comment.getText())
-                .author(userMapper.toDto(comment.getAuthor()))
-                .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "created", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "author", source = "author")
+    @Mapping(target = "item", source = "item")
+    Comment toEntity(CommentDto commentDto, User author, Item item);
 
-    public Comment toEntity(CommentDto commentDto, User author, Item item) {
-        if (commentDto == null) {
-            return null;
-        }
-
-        return Comment.builder()
-                .text(commentDto.getText())
-                .item(item)
-                .author(author)
-                .created(LocalDateTime.now())
-                .build();
+    default UserDto mapUser(User user) {
+        if (user == null) return null;
+        return new UserDto(user.getId(), user.getName(), user.getEmail());
     }
 }
