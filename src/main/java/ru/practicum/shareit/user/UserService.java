@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -13,10 +14,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Transactional
     public UserDto createUser(UserDto userDto) {
         log.info("Создание пользователя: {}", userDto.getEmail());
         if (userRepository.existsByEmail(userDto.getEmail())) {
@@ -28,6 +31,7 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
+    @Transactional
     public UserDto updateUser(Long userId, UserDto userDto) {
         log.info("Обновление пользователя с ID: {}", userId);
         User existingUser = userRepository.findById(userId)
@@ -62,11 +66,13 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteUser(Long userId) {
         log.info("Удаление пользователя с ID: {}", userId);
-        if (!userRepository.deleteById(userId)) {
+        if (!userRepository.existsById(userId)) {
             log.error("Попытка удаления несуществующего пользователя с ID: {}", userId);
             throw new NotFoundException("Пользователь не найден");
         }
+        userRepository.deleteById(userId);
     }
 }
