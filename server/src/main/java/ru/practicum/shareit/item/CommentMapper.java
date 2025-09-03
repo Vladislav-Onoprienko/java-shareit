@@ -19,6 +19,7 @@ public interface CommentMapper {
     CommentDto toDto(Comment comment);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "text", source = "commentDto.text")
     @Mapping(target = "created", expression = "java(LocalDateTime.now())")
     @Mapping(target = "author", source = "author")
     @Mapping(target = "item", source = "item")

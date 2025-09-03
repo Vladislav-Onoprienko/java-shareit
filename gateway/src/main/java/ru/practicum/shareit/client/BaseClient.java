@@ -92,7 +92,13 @@ public class BaseClient {
                 shareitServerResponse = rest.exchange(fullPath, method, requestEntity, Object.class);
             }
         } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
+            try {
+                Object errorBody = e.getResponseBodyAs(Object.class);
+                return ResponseEntity.status(e.getStatusCode()).body(errorBody);
+            } catch (Exception ex) {
+                return ResponseEntity.status(e.getStatusCode())
+                        .body(Map.of("error", e.getResponseBodyAsString()));
+            }
         }
         return prepareGatewayResponse(shareitServerResponse);
     }

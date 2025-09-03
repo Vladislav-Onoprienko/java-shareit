@@ -10,6 +10,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
     @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "lastBooking", ignore = true)
+    @Mapping(target = "nextBooking", ignore = true)
     @Mapping(target = "ownerId", source = "owner.id")
     @Mapping(target = "requestId", source = "request.id")
     ItemDto toDto(Item item);
