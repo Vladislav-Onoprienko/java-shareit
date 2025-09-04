@@ -46,6 +46,8 @@ public class BookingController {
             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Positive int size,
             @RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
+
+        validateBookingState(state);
         return bookingClient.getUserBookings(userId, state, from, size);
     }
 
@@ -55,6 +57,16 @@ public class BookingController {
             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
             @RequestParam(defaultValue = "10") @Positive int size,
             @RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
+
+        validateBookingState(state);
         return bookingClient.getOwnerBookings(userId, state, from, size);
+    }
+
+    private void validateBookingState(String state) {
+        if (!state.equals("ALL") && !state.equals("CURRENT") &&
+                !state.equals("PAST") && !state.equals("FUTURE") &&
+                !state.equals("WAITING") && !state.equals("REJECTED")) {
+            throw new IllegalArgumentException("Unknown state: " + state);
+        }
     }
 }
